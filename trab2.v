@@ -44,7 +44,6 @@ module statem(clk, reset, a, saida);
     reg [2:0] state;
 
     parameter q0 = 3'd2, q1 = 3'd6, q2 = 3'd4, q3 = 3'd7, q4 = 3'd1;
-    //parameter zero=3'd2, tres=3'd4, dois=3'd6, quatro=3'd5, cinco =3'd7;
 
     assign saida =  (state == q0) ? 3'd2:
                     (state == q1) ? 3'd6:
