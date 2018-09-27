@@ -83,7 +83,7 @@ module statePorta(input clk, input res, input a, output [2:0] saida);
     wire [2:0] state;
     wire [2:0] p;
 
-    wire b, c, d, ad, bcd;
+    wire b, c, d;
 
     assign b = state[2];
     assign c = state[1];
@@ -91,11 +91,11 @@ module statePorta(input clk, input res, input a, output [2:0] saida);
 
     assign saida = state;
     
-    assign p[2] =  (a & d) | (a & c) | b;           // 4 portas lógicas
-    assign p[1] =  (a & b) | (b & c & d) | (c & d); // 6 portas lógicas
-    assign p[0] =  (a & d) | (b & c & d)   ;         // 4 portas lógicas
+    assign p[0] =  (a & ~d) | (b & c & ~d);             // 6 portas lógicas
+    assign p[1] =  (~c & d) | (b & c & ~d) | (~a & b);  // 8 portas lógicas
+    assign p[2] =  (a & d) | (~a & ~c) | (c & ~d);      // 8 portas lógicas
     
-    // Total de 14 portas lógicas
+    // Total de 24 portas lógicas
 
     ff  e0(p[0], clk, res, state[0]);
     ff  e1(p[1], clk, res, state[1]);
@@ -121,13 +121,13 @@ module stateMem(input clk,input res, input a, output [2:0] saida);
     wire [3:0] address;  // 16 linhas = 4 bits de endereco
     wire [5:0] dout; // 6 bits de largura 3+3 = proximo estado + saida
     
-    assign address[0] = a;
+    assign address[3] = a;
     assign dout = StateMachine[address];
     assign saida = dout[2:0];
     
-    ff st0(dout[3], clk, res, address[1]);
-    ff st1(dout[4], clk, res, address[2]);
-    ff st2(dout[5], clk, res, address[3]);
+    ff st0(dout[3], clk, res, address[0]);
+    ff st1(dout[4], clk, res, address[1]);
+    ff st2(dout[5], clk, res, address[2]);
 
 endmodule
 
