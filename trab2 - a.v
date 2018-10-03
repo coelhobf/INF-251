@@ -123,7 +123,7 @@ module stateMem(input clk,input res, input a, output [2:0] saida);
         StateMachine[5] = 6'd34;
         StateMachine[6] = 6'd62;
         StateMachine[7] = 6'd23;
-	StateMachine[8] = 6'd34;
+	    StateMachine[8] = 6'd34;
         StateMachine[9] = 6'd49;
         StateMachine[10] = 6'd34;
         StateMachine[11] = 6'd34;
