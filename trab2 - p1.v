@@ -59,22 +59,25 @@ module statem(clk, reset, a, saida);
 endmodule
 
 // FSM com portas logicas
-module statePorta(input clk, input res, input a, output [2:0] saida);
+module statePorta(input clk, input res, input [1:0] A, output [2:0] saida);
 
     wire [2:0] state;
     wire [2:0] p;
 
-    wire b, c, d;
+    wire a, b, c, d, e;
 
-    assign b = state[2];
-    assign c = state[1];
-    assign d = state[0];
+    assign a = state[2];
+
+    assign b = A[1];
+    assign c = A[0];
+    assign d = state[1];
+    assign e = state[0];
 
     assign saida = state;
 
-    assign p[0] =  (a & ~d) | (b & c & ~d);             // 6 portas lógicas
-    assign p[1] =  (~c & d) | (b & c & ~d) | (~a & b);  // 8 portas lógicas
-    assign p[2] =  (a & d) | (~a & ~c) | (c & ~d);      // 8 portas lógicas
+    assign p[2] = (~a & c & d & ~e) | (~a & b & d & ~e) | (a & ~d & e);
+    assign p[1] = (~a & b & c & d) | (~a & ~b & e) | (a & d & ~e) | (~d & e);
+    assign p[0] = (~a & b & c & ~d) | (b & ~c & d & e) | (b & c & ~e) | (~d & ~e) | (a & d);
 
     // Total de 24 portas lógicas
 
@@ -151,7 +154,7 @@ module main;
 
     statem FSM(c, res, a, saida);
     stateMem FSM1(c, res, a, saida1);
-    //statePorta FSM2(c, res, a, saida2);
+    statePorta FSM2(c, res, a, saida2);
 
     initial
         c = 1'b0;
@@ -167,7 +170,7 @@ module main;
 
     initial
     begin
-        $monitor($time," A: \"%b\"  Case: \"%d\" Memória \"%d\"",a,saida,saida1);
+        $monitor($time," A: \"%b\"  Case: \"%d\" Memória \"%d\" Porta: \"%d\"",a,saida,saida1, saida2);
         //Matricula: 92559 -> 01 01 10 10 01 10 00 11 11 -> 1 1 2 2 1 2 0 3 3
         #1 res=0; a=0;
         #1 res=1;
