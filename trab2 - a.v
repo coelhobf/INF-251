@@ -1,26 +1,33 @@
-// Bruno Ferreira Coelho - 92559
-
-/*
-Diagrama da máquina de estados
-+---------------------------------------+
-|                                       |
-|                  +-----------------+  |
-|                  |                1|  |
-|            +-----+              1  |  |
-|            |    0| +-------------+ |  |
-|            |     ▼ ▼            0| ▼  |
-| +---+   +---+   +---+   +---+   +---+ |
-| | q0|   | q2|   | q1|   | q3|   | q4| |
-| +---+   +---+   +---+   +---+   +---+ |
-|  ▲ |     ▲       ▲ |     ▲ |          |
-|  | |    0|1      | |    0| |          |
-|  | +-----+       | +-----+ |          |
-|  |               |       1 |          |
-|  |0              |1        |          |
-|  +-------------------------+          |
-|                                       |
-+---------------------------------------+
-*/
+﻿// Bruno Ferreira Coelho - 92559
+// Matricula em octal => 264617
+//
+// Estados:
+//
+// q0 = 2
+// q1 = 6
+// q2 = 4
+// q3 = 7
+// q4 = 1
+//
+// Diagrama da máquina de estados
+// +---------------------------------------+
+// |                                       |
+// |                  +-----------------+  |
+// |                  |                1|  |
+// |            +-----+              1  |  |
+// |            |    0| +-------------+ |  |
+// |            |     ▼ ▼            0| ▼  |
+// | +---+   +---+   +---+   +---+   +---+ |
+// | | q0|   | q2|   | q1|   | q3|   | q4| |
+// | +---+   +---+   +---+   +---+   +---+ |
+// |  ▲ |     ▲       ▲ |     ▲ |          |
+// |  | |    0|1      | |    0| |          |
+// |  | +-----+       | +-----+ |          |
+// |  |               |       1 |          |
+// |  |0              |1        |          |
+// |  +-------------------------+          |
+// |                                       |
+// +---------------------------------------+
 
 module ff ( input data, input c, input r, output q);
     
@@ -59,8 +66,8 @@ module statem(clk, reset, a, saida);
             case (state)
                 q0: state = q2; 
                 q1: state = q3;
-                q2: state = (a) ? q1 : q4;
-                q3: state = (a) ? q0 : q2;
+                q2: state = (!a) ? q1 : q4;
+                q3: state = (!a) ? q0 : q2;
                 q4: state = q1;
             endcase
         /*
@@ -91,11 +98,11 @@ module statePorta(input clk, input res, input a, output [2:0] saida);
 
     assign saida = state;
     
-    assign p[0] =  (a & ~d) | (b & c & ~d);             // 6 portas lógicas
-    assign p[1] =  (~c & d) | (b & c & ~d) | (~a & b);  // 8 portas lógicas
-    assign p[2] =  (a & d) | (~a & ~c) | (c & ~d);      // 8 portas lógicas
+    assign p[0] = (a & b & ~d) | (b & c & ~d);             // 6 portas lógicas
+    assign p[1] = (~a & b) | (b & c & ~d) | (~c & d);  // 8 portas lógicas
+    assign p[2] = (~b) | (~a & ~d) | (a & c);      // 8 portas lógicas
     
-    // Total de 24 portas lógicas
+    // Total de 22 portas lógicas
 
     ff  e0(p[0], clk, res, state[0]);
     ff  e1(p[1], clk, res, state[1]);
@@ -107,19 +114,27 @@ module stateMem(input clk,input res, input a, output [2:0] saida);
 
     reg [5:0] StateMachine [0:15]; // 16 linhas e 6 bits de largura
     initial
-    begin  // programar ainda....
-        StateMachine[0] = 6'd34;    StateMachine[8] = 6'd34;
-        StateMachine[1] = 6'd34;    StateMachine[9] = 6'd49;
-        StateMachine[2] = 6'd34;    StateMachine[10] = 6'd34;
-        StateMachine[3] = 6'd34;    StateMachine[11] = 6'd34;
-        StateMachine[4] = 6'd52;    StateMachine[12] = 6'd12;
-        StateMachine[5] = 6'd34;    StateMachine[13] = 6'd34;
-        StateMachine[6] = 6'd62;    StateMachine[14] = 6'd62;
-        StateMachine[7] = 6'd23;    StateMachine[15] = 6'd39;
+    begin
+	StateMachine[0] = 6'd34;
+        StateMachine[1] = 6'd49;
+        StateMachine[2] = 6'd34;
+        StateMachine[3] = 6'd34;
+       	StateMachine[4] = 6'd52;
+        StateMachine[5] = 6'd34;
+        StateMachine[6] = 6'd62;
+        StateMachine[7] = 6'd23;
+	StateMachine[8] = 6'd34;
+        StateMachine[9] = 6'd49;
+        StateMachine[10] = 6'd34;
+        StateMachine[11] = 6'd34;
+        StateMachine[12] = 6'd12;
+        StateMachine[13] = 6'd34;
+        StateMachine[14] = 6'd62;
+        StateMachine[15] = 6'd39;
     end
     
-    wire [3:0] address;  // 16 linhas = 4 bits de endereco
-    wire [5:0] dout; // 6 bits de largura 3+3 = proximo estado + saida
+    wire [3:0] address; // 16 linhas = 4 bits de endereco
+    wire [5:0] dout; 	// 6 bits de largura 3+3 = proximo estado + saida
     
     assign address[3] = a;
     assign dout = StateMachine[address];
