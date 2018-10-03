@@ -81,19 +81,22 @@ module statePorta(input clk, input res, input [1:0] A, output [2:0] saida);
 
     wire a, b, c, d, e;
 
-    assign a = state[2];
+    assign c = state[2];
 
-    assign b = A[1];
-    assign c = A[0];
+    assign a = A[1];
+    assign b = A[0];
     assign d = state[1];
     assign e = state[0];
 
     assign saida = state;
 
-    assign p[2] = (~a & c & d & ~e) | (~a & b & d & ~e) | (a & ~d & e);
+    /*assign p[2] = (~a & c & d & ~e) | (~a & b & d & ~e) | (a & ~d & e);
     assign p[1] = (~a & b & c & d) | (~a & ~b & e) | (a & d & ~e) | (~d & e);
-    assign p[0] = (~a & b & c & ~d) | (b & ~c & d & e) | (b & c & ~e) | (~d & ~e) | (a & d);
+    assign p[0] = (~a & b & c & ~d) | (b & ~c & d & e) | (b & c & ~e) | (~d & ~e) | (a & d);*/
 
+    assign p[2] = (c & ~d & e) | (b & ~c & d & ~e) | (a & ~c & d & ~e) | (a & b & ~c & d) | (~a & ~b & ~c & d & e);
+    assign p[1] = (~d & e) | (c & ~e) | (~a & b & ~c & e) | (a & ~b & ~c & d);
+    assign p[0] = (~d & ~e) | (c & d) | (a & ~b & ~e) | (~a & ~b & d & e) | (a & ~b & ~c & ~d) | (a & b & d & e);
     // Total de 24 portas lógicas
 
     ff  e0(p[0], clk, res, state[0]);
